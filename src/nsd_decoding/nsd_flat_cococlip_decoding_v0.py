@@ -11,7 +11,7 @@ from sklearn.metrics import accuracy_score
 
 ROOT = Path(__file__).parents[2]
 
-VERSION = "0.0.0"
+SCRIPT = Path(__file__).stem
 
 
 def main(args):
@@ -26,10 +26,10 @@ def main(args):
     scores = score_predictions(dataset_dict, preds)
 
     result = {
-        "version": VERSION,
+        "script": SCRIPT,
+        "args": vars(args),
         "sha": sha,
         "clean": is_clean,
-        "args": vars(args),
         "wall_t": round(time.monotonic() - start_t, 3),
         **scores,
     }
