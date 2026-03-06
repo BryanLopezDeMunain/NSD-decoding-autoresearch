@@ -123,7 +123,7 @@ def main(args):
 
     # Load mask and PCA
     mask = np.load(ROOT / "metadata/nsd_flat_mask.npy")
-    pca = dict(np.load(ROOT / "metadata/nsd_flat_pca.npz"))
+    pca = dict(np.load(ROOT / "datasets/nsd_flat_pca.npz"))
     print(
         f"Mask: {int(mask.sum())} voxels, PCA: {pca['components'].shape[0]} components, "
         f"using {args.n_components}"

@@ -25,14 +25,14 @@ The validation and test splits contain held-out subjects. The task is cross-subj
 
 1. Mask background voxels (value 127) using `metadata/nsd_flat_mask.npy` (18,577 of 43,000 survive)
 2. Per-sample z-normalization of masked voxels
-3. PCA projection + whitening using `metadata/nsd_flat_pca.npz` (fit on training data only)
+3. PCA projection + whitening using `datasets/nsd_flat_pca.npz` (fit on training data only)
    - `components`: (512, 18577), `mean`: (18577,), `scale`: (512,) for whitening
 
 ## Key files
 
 - Scripts: `src/nsd_decoding/nsd_flat_cococlip_decoding_v{0,1,2,3,4}.py`
 - Preprocessing: `notebooks/nsd_flat_masking.ipynb`, `notebooks/nsd_flat_pca.ipynb`
-- Metadata: `metadata/nsd_flat_mask.npy`, `metadata/nsd_flat_pca.npz`, `metadata/nsd_include_coco_categories.json`
+- Metadata: `metadata/nsd_flat_mask.npy`, `datasets/nsd_flat_pca.npz`, `metadata/nsd_include_coco_categories.json`
 - Experiments: `experiments/sweep_v4/`, `experiments/sweep_v4_nc/`
 
 ## Current status
