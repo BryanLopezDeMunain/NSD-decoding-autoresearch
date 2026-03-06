@@ -87,13 +87,12 @@ def load_split_tensors(ds, mask, subs):
     return activity, targets
 
 
-def train_one_epoch(model, loader, optimizer, criterion, device):
+def train_one_epoch(model, loader, optimizer, criterion):
     model.train()
     total_loss = 0
     correct = 0
     total = 0
     for x, y in loader:
-        x, y = x.to(device), y.to(device)
         out = model(x)
         loss = criterion(out, y)
         optimizer.zero_grad()
@@ -106,14 +105,13 @@ def train_one_epoch(model, loader, optimizer, criterion, device):
 
 
 @torch.no_grad()
-def evaluate(model, loader, device):
+def evaluate(model, loader):
     model.eval()
     all_preds = []
     for x, y in loader:
-        x = x.to(device)
         out = model(x)
-        all_preds.append(out.argmax(1).cpu())
-    return torch.cat(all_preds).numpy()
+        all_preds.append(out.argmax(1))
+    return torch.cat(all_preds).cpu().numpy()
 
 
 def main(args):
@@ -142,19 +140,17 @@ def main(args):
     splits = {}
     for name, hf_split in split_map.items():
         act, tgt = load_split_tensors(dataset_dict[hf_split], mask, subs)
-        splits[name] = (act, tgt)
+        splits[name] = (act.to(device), tgt.to(device))
         print(f"  {name} ({hf_split}): {act.shape}, targets: {tgt.shape}")
 
     train_loader = DataLoader(
         TensorDataset(*splits["train"]),
         batch_size=256,
         shuffle=True,
-        num_workers=4,
-        pin_memory=True,
         drop_last=True,
     )
     eval_loaders = {
-        split: DataLoader(TensorDataset(act, tgt), batch_size=512, num_workers=4, pin_memory=True)
+        split: DataLoader(TensorDataset(act, tgt), batch_size=512)
         for split, (act, tgt) in splits.items()
     }
 
@@ -176,11 +172,11 @@ def main(args):
     best_val_acc = 0
     best_state = None
     for epoch in range(args.epochs):
-        loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion, device)
+        loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion)
         scheduler.step()
 
-        val_preds = evaluate(model, eval_loaders["val"], device)
-        val_acc = 100 * accuracy_score(splits["val"][1].numpy(), val_preds)
+        val_preds = evaluate(model, eval_loaders["val"])
+        val_acc = 100 * accuracy_score(splits["val"][1].cpu().numpy(), val_preds)
 
         elapsed = time.monotonic() - start_t
         print(
@@ -196,7 +192,7 @@ def main(args):
     model.to(device)
     preds = {}
     for split in splits:
-        preds[split] = evaluate(model, eval_loaders[split], device)
+        preds[split] = evaluate(model, eval_loaders[split])
 
     scores = score_predictions(splits, preds)
 
@@ -214,7 +210,7 @@ def main(args):
 def score_predictions(splits, preds):
     scores = {}
     for split, (act, tgt) in splits.items():
-        targets = tgt.numpy()
+        targets = tgt.cpu().numpy()
         score = accuracy_score(targets, preds[split])
         scores[f"acc_{split}"] = round(100 * score, 3)
     return scores
