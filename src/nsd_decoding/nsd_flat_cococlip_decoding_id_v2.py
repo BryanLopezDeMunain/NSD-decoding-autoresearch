@@ -149,7 +149,7 @@ def main(args):
 
     train_loader = DataLoader(
         TensorDataset(*splits["train"]),
-        batch_size=256,
+        batch_size=args.batch_size,
         shuffle=True,
         drop_last=True,
     )
@@ -238,6 +238,7 @@ def get_sha():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--subs", type=str, default="0,1,2,5,6,7")
+    parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--n_components", type=int, default=256)
     parser.add_argument("--depth", type=int, default=3)
