@@ -8,7 +8,7 @@
 #SBATCH --output=slurms/slurm-%A_%a.out
 #SBATCH --nodelist=n-1,n-2,n-3,n-4
 #SBATCH --account=training
-#SBATCH --array=0-3
+#SBATCH --array=4
 
 set -euo pipefail
 
@@ -24,6 +24,7 @@ sub_groups=(
     "0"
     "1"
     "2"
+    "0,1,2"
 )
 subs=${sub_groups[SLURM_ARRAY_TASK_ID]}
 
