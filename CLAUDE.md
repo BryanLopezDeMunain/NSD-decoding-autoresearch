@@ -1,16 +1,29 @@
-# NSD decoding
+# CLAUDE.md
 
-The goal of this small project is to train models for visual category decoding from fMRI data using the natural scenes dataset.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-The dataset is hosted on HuggingFace at [`clane9/nsd-flat-cococlip`](https://huggingface.co/datasets/clane9/nsd-flat-cococlip). Each sample has the following fields:
+## Project overview
 
-- `subject_id`: NSD subject ID (0, ..., 7)
-- `trial_id`: NSD trial ID
-- `nsd_id`: NSD stimulus ID
-- `activity`: visual cortex fMRI activity represented in a flat map format (shape `(1, 215, 200)`)
-- `target`: target category ID (0, ..., 23)
+Visual category decoding (24 classes) from fMRI data using the Natural Scenes Dataset. Models predict a target category from cortical flat map activity. Dataset: [`clane9/nsd-flat-cococlip`](https://huggingface.co/datasets/clane9/nsd-flat-cococlip).
 
-A model should predict the target category given the activity map. Constraints: single H100 GPU, wall time at most 20 minutes per run, no additional data. Track results in `RESULTS.md`.
+Constraints: single H100 GPU, wall time at most 20 minutes per run, no additional data. Track results in `RESULTS.md`.
+
+## Commands
+
+```bash
+# Install (uses uv for package management)
+uv sync
+
+# Run a training script
+uv run python src/nsd_decoding/nsd_flat_cococlip_decoding_v4.py --n_components 96 --depth 6 --dropout 0.7 --drop_path 0.2 --lr 5e-4
+
+# Launch a sweep via Slurm
+sbatch experiments/sweep_v4/launch.sh
+
+# Lint
+uv run ruff check src/
+uv run ruff format --check src/
+```
 
 ## Data splits
 
@@ -28,12 +41,21 @@ The validation and test splits contain held-out subjects. The task is cross-subj
 3. PCA projection + whitening using `datasets/nsd_flat_pca.npz` (fit on training data only)
    - `components`: (512, 18577), `mean`: (18577,), `scale`: (512,) for whitening
 
+## Architecture
+
+Each script version (`src/nsd_decoding/nsd_flat_cococlip_decoding_v{0,1,2,3,4}.py`) is a self-contained, single-file training script with model definition, data loading, training loop, and evaluation. No shared library code — each version is frozen for reproducibility.
+
+- **v4** (current best): ResidualMLP on PCA-projected features. Residual blocks with LayerNorm, GELU, Dropout, DropPath. Trained with AdamW + cosine annealing.
+- **id_v1/v2**: Within-subject decoding variants using the `shared1k` split.
+
+Scripts output a JSON result line at the end with accuracies and config, which gets collected into `experiments/*/result.jsonl`.
+
 ## Key files
 
-- Scripts: `src/nsd_decoding/nsd_flat_cococlip_decoding_v{0,1,2,3,4}.py`
-- Preprocessing: `notebooks/nsd_flat_masking.ipynb`, `notebooks/nsd_flat_pca.ipynb`
-- Metadata: `metadata/nsd_flat_mask.npy`, `datasets/nsd_flat_pca.npz`, `metadata/nsd_include_coco_categories.json`
-- Experiments: `experiments/sweep_v4/`, `experiments/sweep_v4_nc/`
+- Training scripts: `src/nsd_decoding/nsd_flat_cococlip_decoding_v*.py`
+- Preprocessing notebooks: `notebooks/nsd_flat_masking.ipynb`, `notebooks/nsd_flat_pca.ipynb`
+- Metadata: `metadata/nsd_flat_mask.npy`, `datasets/nsd_flat_pca.npz`, `metadata/nsd_cococlip_categories.json`
+- Sweep configs: `experiments/sweep_v4/`, `experiments/sweep_v4_nc/`, `experiments/sweep_id_v2/`
 
 ## Current status
 
@@ -45,3 +67,4 @@ Best cross-subject test accuracy: 27.8% (v4, n_components=96, depth=6, dropout=0
 - Be direct; minimal style (avoid excessive emojis and emphatic language)
 - Each script version is a separate file (v0.py, v1.py, ...) for reproducibility
 - Use sbatch array jobs for sweeps (see `experiments/` for the pattern)
+- Ruff config: line-length 100, ignore F722 (for jaxtyping annotations)
