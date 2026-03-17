@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import random
 import subprocess
 import time
 from pathlib import Path
@@ -69,7 +70,7 @@ class ResidualMLP(nn.Module):
         return x
 
 
-def load_split_tensors(ds, mask, subs):
+def load_split_tensors(ds, mask, subs, avgpool=False):
     """Load a HF dataset split, filter by subjects, apply mask, per-sample z-normalize."""
     subject_ids = np.array(ds["subject_id"])
     keep = np.isin(subject_ids, subs)
@@ -80,9 +81,20 @@ def load_split_tensors(ds, mask, subs):
         activity = activity[:, 0]
     activity = activity[:, mask]
     activity = torch.tensor(activity, dtype=torch.float32)
+
+    # average all image repeats
+    if avgpool:
+        sub_ids = np.array(ds["subject_id"])
+        nsd_ids = np.array(ds["nsd_id"])
+        sample_ids = np.stack([sub_ids, nsd_ids], axis=1)
+        for sub_id, nsd_id in np.unique(sample_ids, axis=0):
+            mask = (sub_ids == sub_id) & (nsd_ids == nsd_id)
+            activity[mask] = activity[mask].mean(axis=0, keepdim=True)
+
     mean = activity.mean(dim=1, keepdim=True)
     std = activity.std(dim=1, keepdim=True).clamp(min=1e-6)
     activity = (activity - mean) / std
+
     targets = torch.tensor(np.array(ds["target"]), dtype=torch.long)
     return activity, targets
 
@@ -115,6 +127,11 @@ def evaluate(model, loader):
 
 
 def main(args):
+    seed = 42
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
     start_t = time.monotonic()
     sha, is_clean = get_sha()
     print(f"sha: {sha}, clean: {is_clean}")
@@ -139,7 +156,7 @@ def main(args):
     print("Loading tensors...")
     splits = {}
     for name, hf_split in split_map.items():
-        act, tgt = load_split_tensors(dataset_dict[hf_split], mask, subs)
+        act, tgt = load_split_tensors(dataset_dict[hf_split], mask, subs, avgpool=args.avgpool)
         splits[name] = (act.to(device), tgt.to(device))
         print(f"  {name} ({hf_split}): {act.shape}, targets: {tgt.shape}")
 
@@ -244,5 +261,6 @@ if __name__ == "__main__":
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--wd", type=float, default=0.01)
     parser.add_argument("--notes", type=str, default=None)
+    parser.add_argument("--avgpool", action="store_true")
     args = parser.parse_args()
     main(args)
