@@ -87,11 +87,8 @@ class ResidualMLP(nn.Module):
 class BoldDataset(Dataset):
     """Wraps a HF dataset split, filtering by subject and mapping labels."""
 
-    def __init__(self, hf_dataset, subs):
-        sub_strings = [f"subj{s + 1:02d}" for s in subs]
-        sub_col = np.array(hf_dataset["sub"])
-        keep = np.isin(sub_col, sub_strings)
-        self.ds = hf_dataset.select(np.where(keep)[0])
+    def __init__(self, hf_dataset):
+        self.ds = hf_dataset
         self.ds.set_format("torch")
 
     def __len__(self):
@@ -155,15 +152,12 @@ def main(args):
     sha, is_clean = get_sha()
     print(f"sha: {sha}, clean: {is_clean}")
 
-    subs = [int(s) for s in args.subs.split(",")]
-    print(f"subjects: {subs}")
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"device: {device}")
 
     # Load data
     dataset_root = ROOT / "datasets/nsd_flat_cococlip_full_ts"
-    split_map = {"train": "train", "val": "testid", "test": "shared1000"}
+    split_map = {"train": "train", "val": "validation", "test": "test"}
 
     print("Loading datasets...")
     datasets = {}
@@ -173,7 +167,7 @@ def main(args):
             data_files=f"{dataset_root}/{hf_split}/*.arrow",
             split="train",
         )
-        ds = BoldDataset(hf_ds, subs)
+        ds = BoldDataset(hf_ds)
         datasets[name] = ds
         print(f"  {name} ({hf_split}): {len(ds)} samples")
 
@@ -269,7 +263,6 @@ def get_sha():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--subs", type=str, default="0,1,2,5,6,7")
     parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--latent_dim", type=int, default=256)
