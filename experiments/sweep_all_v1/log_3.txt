@@ -1,0 +1,90 @@
+sha: 90bdf921785b5ec1e3b9842c2ea8f5460e8740bd, clean: True
+evaluating ID decoding
+subjects: [0]
+device: cuda
+Loading datasets...
+  train (train): 6190 samples
+  val (testid): 864 samples
+  test (shared1000): 559 samples
+Model params: 20,314,648
+Epoch   1/30 | loss=2.9961 | train_acc=15.4% | val_acc=19.9% | 76s
+Epoch   2/30 | loss=2.1000 | train_acc=45.9% | val_acc=27.9% | 135s
+Epoch   3/30 | loss=1.2157 | train_acc=74.7% | val_acc=39.2% | 196s
+Epoch   4/30 | loss=0.3193 | train_acc=98.3% | val_acc=42.2% | 256s
+Epoch   5/30 | loss=0.0475 | train_acc=100.0% | val_acc=46.1% | 319s
+Epoch   6/30 | loss=0.0157 | train_acc=100.0% | val_acc=46.4% | 379s
+Epoch   7/30 | loss=0.0104 | train_acc=100.0% | val_acc=46.5% | 439s
+Epoch   8/30 | loss=0.0078 | train_acc=100.0% | val_acc=47.2% | 500s
+Epoch   9/30 | loss=0.0064 | train_acc=100.0% | val_acc=47.1% | 561s
+Epoch  10/30 | loss=0.0054 | train_acc=100.0% | val_acc=46.9% | 619s
+Epoch  11/30 | loss=0.0047 | train_acc=100.0% | val_acc=46.6% | 676s
+Early stopping: val_acc 46.6% < 99% of best 47.2%
+{"script": "nsd_flat_cococlip_full_ts_decoding", "args": {"ood": false, "subs": "0", "batch_size": 256, "epochs": 30, "latent_dim": 256, "depth": 3, "dropout": 0.0, "drop_path": 0.0, "lr": 0.0003, "wd": 0.01, "num_workers": 4, "notes": "full_ts__subj01__lr3e-4"}, "sha": "90bdf921785b5ec1e3b9842c2ea8f5460e8740bd", "clean": true, "wall_t": 727.343, "best_epoch": 8, "acc_train": 100.0, "acc_val": 47.222, "acc_test": 40.787}
+sha: 90bdf921785b5ec1e3b9842c2ea8f5460e8740bd, clean: True
+evaluating ID decoding
+subjects: [0]
+device: cuda
+Loading datasets...
+  train (train): 6190 samples
+  val (testid): 864 samples
+  test (shared1000): 559 samples
+Model params: 20,314,648
+Epoch   1/30 | loss=3.0266 | train_acc=13.9% | val_acc=19.4% | 67s
+Epoch   2/30 | loss=2.3040 | train_acc=35.7% | val_acc=26.5% | 126s
+Epoch   3/30 | loss=1.6738 | train_acc=54.5% | val_acc=37.7% | 184s
+Epoch   4/30 | loss=0.8342 | train_acc=82.7% | val_acc=44.0% | 244s
+Epoch   5/30 | loss=0.1599 | train_acc=98.8% | val_acc=48.7% | 303s
+Epoch   6/30 | loss=0.0221 | train_acc=100.0% | val_acc=51.3% | 361s
+Epoch   7/30 | loss=0.0073 | train_acc=100.0% | val_acc=51.6% | 418s
+Epoch   8/30 | loss=0.0051 | train_acc=100.0% | val_acc=51.6% | 482s
+Epoch   9/30 | loss=0.0036 | train_acc=100.0% | val_acc=51.9% | 546s
+Epoch  10/30 | loss=0.0029 | train_acc=100.0% | val_acc=51.7% | 605s
+Epoch  11/30 | loss=0.0024 | train_acc=100.0% | val_acc=51.6% | 665s
+Epoch  12/30 | loss=0.0020 | train_acc=100.0% | val_acc=51.7% | 728s
+Epoch  13/30 | loss=0.0018 | train_acc=100.0% | val_acc=51.6% | 786s
+Epoch  14/30 | loss=0.0016 | train_acc=100.0% | val_acc=51.6% | 853s
+Epoch  15/30 | loss=0.0015 | train_acc=100.0% | val_acc=51.6% | 913s
+Epoch  16/30 | loss=0.0013 | train_acc=100.0% | val_acc=51.7% | 974s
+Epoch  17/30 | loss=0.0012 | train_acc=100.0% | val_acc=51.6% | 1040s
+Epoch  18/30 | loss=0.0012 | train_acc=100.0% | val_acc=51.5% | 1100s
+Epoch  19/30 | loss=0.0011 | train_acc=100.0% | val_acc=51.7% | 1160s
+Epoch  20/30 | loss=0.0011 | train_acc=100.0% | val_acc=51.7% | 1223s
+Epoch  21/30 | loss=0.0010 | train_acc=100.0% | val_acc=51.9% | 1288s
+Epoch  22/30 | loss=0.0010 | train_acc=100.0% | val_acc=51.9% | 1347s
+Epoch  23/30 | loss=0.0010 | train_acc=100.0% | val_acc=51.9% | 1410s
+Epoch  24/30 | loss=0.0009 | train_acc=100.0% | val_acc=51.7% | 1469s
+Epoch  25/30 | loss=0.0009 | train_acc=100.0% | val_acc=51.7% | 1524s
+Epoch  26/30 | loss=0.0009 | train_acc=100.0% | val_acc=51.7% | 1566s
+Epoch  27/30 | loss=0.0009 | train_acc=100.0% | val_acc=51.7% | 1618s
+Epoch  28/30 | loss=0.0009 | train_acc=100.0% | val_acc=52.0% | 1674s
+Epoch  29/30 | loss=0.0009 | train_acc=100.0% | val_acc=52.0% | 1728s
+Epoch  30/30 | loss=0.0009 | train_acc=100.0% | val_acc=52.0% | 1784s
+{"script": "nsd_flat_cococlip_full_ts_decoding", "args": {"ood": false, "subs": "0", "batch_size": 256, "epochs": 30, "latent_dim": 256, "depth": 3, "dropout": 0.0, "drop_path": 0.0, "lr": 0.001, "wd": 0.01, "num_workers": 4, "notes": "full_ts__subj01__lr1e-3"}, "sha": "90bdf921785b5ec1e3b9842c2ea8f5460e8740bd", "clean": true, "wall_t": 1833.189, "best_epoch": 28, "acc_train": 100.0, "acc_val": 51.968, "acc_test": 48.837}
+sha: 90bdf921785b5ec1e3b9842c2ea8f5460e8740bd, clean: True
+evaluating ID decoding
+subjects: [0]
+device: cuda
+Loading datasets...
+  train (train): 6190 samples
+  val (testid): 864 samples
+  test (shared1000): 559 samples
+Model params: 20,314,648
+Epoch   1/30 | loss=2.9870 | train_acc=14.2% | val_acc=19.9% | 63s
+Epoch   2/30 | loss=2.3077 | train_acc=32.5% | val_acc=28.4% | 121s
+Epoch   3/30 | loss=1.7564 | train_acc=47.3% | val_acc=39.4% | 183s
+Epoch   4/30 | loss=1.0704 | train_acc=70.4% | val_acc=45.9% | 240s
+Epoch   5/30 | loss=0.3828 | train_acc=92.0% | val_acc=48.4% | 293s
+Epoch   6/30 | loss=0.0633 | train_acc=99.5% | val_acc=52.7% | 350s
+Epoch   7/30 | loss=0.0121 | train_acc=100.0% | val_acc=52.8% | 412s
+Epoch   8/30 | loss=0.0056 | train_acc=100.0% | val_acc=54.6% | 473s
+Epoch   9/30 | loss=0.0029 | train_acc=100.0% | val_acc=54.3% | 535s
+Epoch  10/30 | loss=0.0021 | train_acc=100.0% | val_acc=54.7% | 594s
+Epoch  11/30 | loss=0.0017 | train_acc=100.0% | val_acc=54.9% | 652s
+Epoch  12/30 | loss=0.0014 | train_acc=100.0% | val_acc=55.4% | 711s
+Epoch  13/30 | loss=0.0013 | train_acc=100.0% | val_acc=55.3% | 767s
+Epoch  14/30 | loss=0.0011 | train_acc=100.0% | val_acc=55.7% | 822s
+Epoch  15/30 | loss=0.0010 | train_acc=100.0% | val_acc=55.3% | 885s
+Epoch  16/30 | loss=0.0009 | train_acc=100.0% | val_acc=55.3% | 943s
+Epoch  17/30 | loss=0.0009 | train_acc=100.0% | val_acc=55.1% | 1002s
+Early stopping: val_acc 55.1% < 99% of best 55.7%
+{"script": "nsd_flat_cococlip_full_ts_decoding", "args": {"ood": false, "subs": "0", "batch_size": 256, "epochs": 30, "latent_dim": 256, "depth": 3, "dropout": 0.0, "drop_path": 0.0, "lr": 0.003, "wd": 0.01, "num_workers": 4, "notes": "full_ts__subj01__lr3e-3"}, "sha": "90bdf921785b5ec1e3b9842c2ea8f5460e8740bd", "clean": true, "wall_t": 1055.119, "best_epoch": 14, "acc_train": 100.0, "acc_val": 55.671, "acc_test": 50.268}

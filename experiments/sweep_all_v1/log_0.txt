@@ -1,0 +1,42 @@
+sha: 90bdf921785b5ec1e3b9842c2ea8f5460e8740bd, clean: True
+evaluating OOD decoding
+device: cuda
+Mask: 18577 voxels out of 43000
+Loading tensors...
+  train (train): torch.Size([32539, 18577]), targets: torch.Size([32539])
+  val (validation): torch.Size([5418, 18577]), targets: torch.Size([5418])
+  test (test): torch.Size([5390, 18577]), targets: torch.Size([5390])
+Model params: 5,158,936
+Epoch   1/30 | loss=2.6962 | train_acc=23.4% | val_acc=23.3% | 45s
+Epoch   2/30 | loss=2.2368 | train_acc=35.3% | val_acc=25.0% | 45s
+Epoch   3/30 | loss=2.0086 | train_acc=41.8% | val_acc=22.6% | 46s
+Early stopping: val_acc 22.6% < 99% of best 25.0%
+{"script": "nsd_flat_cococlip_decoding", "args": {"ood": true, "subs": "0", "batch_size": 256, "epochs": 30, "latent_dim": 256, "depth": 3, "dropout": 0.0, "drop_path": 0.0, "lr": 0.0003, "wd": 0.01, "notes": "beta__ood__lr3e-4", "avgpool": false}, "sha": "90bdf921785b5ec1e3b9842c2ea8f5460e8740bd", "clean": true, "wall_t": 45.806, "best_epoch": 2, "acc_train": 39.494, "acc_val": 25.046, "acc_test": 26.178}
+sha: 90bdf921785b5ec1e3b9842c2ea8f5460e8740bd, clean: True
+evaluating OOD decoding
+device: cuda
+Mask: 18577 voxels out of 43000
+Loading tensors...
+  train (train): torch.Size([32539, 18577]), targets: torch.Size([32539])
+  val (validation): torch.Size([5418, 18577]), targets: torch.Size([5418])
+  test (test): torch.Size([5390, 18577]), targets: torch.Size([5390])
+Model params: 5,158,936
+Epoch   1/30 | loss=2.7869 | train_acc=21.4% | val_acc=22.2% | 40s
+Epoch   2/30 | loss=2.3499 | train_acc=31.3% | val_acc=24.9% | 40s
+Epoch   3/30 | loss=2.1424 | train_acc=37.5% | val_acc=24.2% | 40s
+Early stopping: val_acc 24.2% < 99% of best 24.9%
+{"script": "nsd_flat_cococlip_decoding", "args": {"ood": true, "subs": "0", "batch_size": 256, "epochs": 30, "latent_dim": 256, "depth": 3, "dropout": 0.0, "drop_path": 0.0, "lr": 0.001, "wd": 0.01, "notes": "beta__ood__lr1e-3", "avgpool": false}, "sha": "90bdf921785b5ec1e3b9842c2ea8f5460e8740bd", "clean": true, "wall_t": 40.361, "best_epoch": 2, "acc_train": 35.099, "acc_val": 24.935, "acc_test": 26.698}
+sha: 90bdf921785b5ec1e3b9842c2ea8f5460e8740bd, clean: True
+evaluating OOD decoding
+device: cuda
+Mask: 18577 voxels out of 43000
+Loading tensors...
+  train (train): torch.Size([32539, 18577]), targets: torch.Size([32539])
+  val (validation): torch.Size([5418, 18577]), targets: torch.Size([5418])
+  test (test): torch.Size([5390, 18577]), targets: torch.Size([5390])
+Model params: 5,158,936
+Epoch   1/30 | loss=2.8422 | train_acc=18.7% | val_acc=21.2% | 38s
+Epoch   2/30 | loss=2.4462 | train_acc=28.1% | val_acc=24.0% | 38s
+Epoch   3/30 | loss=2.2598 | train_acc=33.0% | val_acc=23.6% | 38s
+Early stopping: val_acc 23.6% < 99% of best 24.0%
+{"script": "nsd_flat_cococlip_decoding", "args": {"ood": true, "subs": "0", "batch_size": 256, "epochs": 30, "latent_dim": 256, "depth": 3, "dropout": 0.0, "drop_path": 0.0, "lr": 0.003, "wd": 0.01, "notes": "beta__ood__lr3e-3", "avgpool": false}, "sha": "90bdf921785b5ec1e3b9842c2ea8f5460e8740bd", "clean": true, "wall_t": 38.318, "best_epoch": 2, "acc_train": 31.458, "acc_val": 23.957, "acc_test": 26.289}
