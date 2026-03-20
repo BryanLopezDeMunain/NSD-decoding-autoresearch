@@ -19,21 +19,21 @@ Each sample contains:
 
 Train on 6 subjects, evaluate on 2 held-out subjects.
 
-| Split | Subjects | Samples |
+| Split | Notes | Samples |
 |-------|----------|---------|
-| train | 0, 1, 2, 5, 6, 7 | 32,539 |
-| validation | 3 | 5,418 |
-| test | 4 | 5,390 |
+| train | sub 1-3, 6-8 | 32,539 |
+| val | sub 4 | 5,418 |
+| test | sub 5 | 5,390 |
 
 ### subj01 (within-subject)
 
-Train and evaluate on subject 0 only.
+Train and evaluate on subj01 only.
 
-| Split | Source | Samples |
+| Split | Notes | Samples |
 |-------|--------|---------|
-| train | train (filtered) | 6,190 |
-| val | testid (filtered) | 864 |
-| test | shared1000 (filtered) | 559 |
+| train | ses 1-35 | 6,190 |
+| val | ses 36-40 | 864 |
+| test | shared1000 | 559 |
 
 ## Categories
 
