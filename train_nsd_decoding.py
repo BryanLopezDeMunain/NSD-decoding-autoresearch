@@ -128,7 +128,6 @@ def main(args):
     np.random.seed(seed)
     torch.manual_seed(seed)
 
-    start_t = time.monotonic()
     sha, is_clean = get_sha()
     print(f"sha: {sha}, clean: {is_clean}")
 
@@ -187,6 +186,7 @@ def main(args):
     best_val_acc = 0
     best_epoch = 0
     best_state = None
+    start_t = time.monotonic()
     for epoch in range(args.epochs):
         loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion)
         scheduler.step()

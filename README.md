@@ -31,15 +31,15 @@ Train and evaluate on subject 0 only.
 
 | Split | Source | Samples |
 |-------|--------|---------|
-| train | train (filtered) | ~5,400 |
-| val | testid (filtered) | ~860 |
-| test | shared1000 (filtered) | ~510 |
+| train | train (filtered) | 6,190 |
+| val | testid (filtered) | 864 |
+| test | shared1000 (filtered) | 559 |
 
 ## Categories
 
-airplane, bed, bus, cake, clock, cow, elephant, fire hydrant, giraffe,
-horse, kite, motorcycle, pizza, skateboard, skis, snowboard, stop sign,
-surfboard, sheep, tennis racket, toilet, train, umbrella, zebra
+motorcycle, airplane, bus, train, fire hydrant, stop sign, horse, sheep,
+cow, elephant, zebra, giraffe, umbrella, skis, snowboard, kite,
+skateboard, surfboard, tennis racket, pizza, cake, bed, toilet, clock
 
 ## Setup
 
@@ -51,28 +51,26 @@ uv sync
 
 ```bash
 # Cross-subject decoding (default)
-python train_nsd_decoding.py
+uv run python train_nsd_decoding.py
 
 # Within-subject decoding
-python train_nsd_decoding.py --subset subj01
+uv run python train_nsd_decoding.py --subset subj01
 
 # Custom hyperparameters
-python train_nsd_decoding.py --latent_dim 512 --depth 4 --dropout 0.5 --lr 5e-4
+uv run python train_nsd_decoding.py --latent_dim 512 --depth 4 --dropout 0.5 --lr 5e-4
 ```
 
 On first run, the dataset is downloaded from HuggingFace (~800MB) and cached locally.
 
 ## Baseline
 
-| Subset | Test Acc | Architecture |
-|--------|----------|-------------|
-| ood | ~20% | ResidualMLP (256d, depth 3) |
-| subj01 | ~36% | ResidualMLP (256d, depth 3) |
-
-Chance = 4.2% (1/24).
+| Subset | Test Acc | Wall Time |
+|--------|----------|-----------|
+| ood | 26.7% | 1s |
+| subj01 | 62.3% | 4s |
 
 ## Constraints
 
 - Single GPU
-- Wall time at most 20 minutes per run
+- Wall time at most 5 minutes per run
 - No additional data beyond the provided dataset

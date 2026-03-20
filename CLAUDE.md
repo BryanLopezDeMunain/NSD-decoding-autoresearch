@@ -4,7 +4,7 @@
 
 Visual category decoding (24 classes) from fMRI flat maps.
 Dataset: [`clane9/nsd-flat-cococlip`](https://huggingface.co/datasets/clane9/nsd-flat-cococlip).
-Single training script, single GPU, <=20 min wall time, no additional data.
+Single training script, single GPU, <=5 min wall time, no additional data.
 
 ## Commands
 
@@ -34,4 +34,4 @@ ResidualMLP: Linear projection → residual blocks (LayerNorm → Linear → GEL
 
 ## Baseline
 
-OOD test accuracy: ~20%. Within-subject (subj01): ~36%. Chance: 4.2%.
+OOD test accuracy: 26.7%. Within-subject (subj01): 62.3%.
