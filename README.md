@@ -1,18 +1,45 @@
 # NSD Decoding
 
-Cross-subject visual category decoding from fMRI data using the [Natural Scenes Dataset](https://naturalscenesdataset.org/).
+Visual category decoding (24 classes) from fMRI data using the [Natural Scenes Dataset](https://naturalscenesdataset.org/).
 
 ## Task
 
-Predict which of 24 visual categories a subject is viewing, given their fMRI cortical flat map activity. The challenge is cross-subject generalization: models are trained on 6 subjects and evaluated on 2 held-out subjects.
+Given fMRI cortical flat map activity, predict which of 24 visual categories a subject is viewing.
 
-## Dataset
+**Dataset:** [`clane9/nsd-flat-cococlip`](https://huggingface.co/datasets/clane9/nsd-flat-cococlip)
 
-[`clane9/nsd-flat-cococlip`](https://huggingface.co/datasets/clane9/nsd-flat-cococlip) on HuggingFace. Each sample contains:
-
-- `activity`: fMRI flat map (215 x 200)
-- `target`: category ID (0-23)
+Each sample contains:
+- `activity`: fMRI flat map (215 x 200, uint8)
+- `target`: category label (0-23)
 - `subject_id`, `trial_id`, `nsd_id`
+
+## Subsets
+
+### OOD (cross-subject, default)
+
+Train on 6 subjects, evaluate on 2 held-out subjects.
+
+| Split | Subjects | Samples |
+|-------|----------|---------|
+| train | 0, 1, 2, 5, 6, 7 | 32,539 |
+| validation | 3 | 5,418 |
+| test | 4 | 5,390 |
+
+### subj01 (within-subject)
+
+Train and evaluate on subject 0 only.
+
+| Split | Source | Samples |
+|-------|--------|---------|
+| train | train (filtered) | ~5,400 |
+| val | testid (filtered) | ~860 |
+| test | shared1000 (filtered) | ~510 |
+
+## Categories
+
+airplane, bed, bus, cake, clock, cow, elephant, fire hydrant, giraffe,
+horse, kite, motorcycle, pizza, skateboard, skis, snowboard, stop sign,
+surfboard, sheep, tennis racket, toilet, train, umbrella, zebra
 
 ## Setup
 
@@ -20,16 +47,32 @@ Predict which of 24 visual categories a subject is viewing, given their fMRI cor
 uv sync
 ```
 
-## Usage
+## Run
 
 ```bash
-# Run the current best model (v4: PCA + residual MLP)
-python src/nsd_decoding/nsd_flat_cococlip_decoding_v4.py --n_components 96 --depth 6 --dropout 0.7 --drop_path 0.2 --lr 5e-4
+# Cross-subject decoding (default)
+python train_nsd_decoding.py
 
-# Run a hyperparameter sweep
-sbatch experiments/sweep_v4_nc/launch.sh
+# Within-subject decoding
+python train_nsd_decoding.py --subset subj01
+
+# Custom hyperparameters
+python train_nsd_decoding.py --latent_dim 512 --depth 4 --dropout 0.5 --lr 5e-4
 ```
 
-## Results
+On first run, the dataset is downloaded from HuggingFace (~800MB) and cached locally.
 
-See [RESULTS.md](RESULTS.md) for detailed results. Current best: 27.8% cross-subject test accuracy.
+## Baseline
+
+| Subset | Test Acc | Architecture |
+|--------|----------|-------------|
+| ood | ~20% | ResidualMLP (256d, depth 3) |
+| subj01 | ~36% | ResidualMLP (256d, depth 3) |
+
+Chance = 4.2% (1/24).
+
+## Constraints
+
+- Single GPU
+- Wall time at most 20 minutes per run
+- No additional data beyond the provided dataset
