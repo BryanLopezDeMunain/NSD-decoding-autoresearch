@@ -21,9 +21,9 @@ Train on 6 subjects, evaluate on 2 held-out subjects.
 
 | Split | Notes | Samples |
 |-------|----------|---------|
-| train | sub 1-3, 6-8 | 32,539 |
-| val | sub 4 | 5,418 |
-| test | sub 5 | 5,390 |
+| train | subj 1-3, 6-8 | 32,539 |
+| val | subj 4 | 5,418 |
+| test | subj 5 | 5,390 |
 
 ### subj01 (within-subject)
 
@@ -74,10 +74,10 @@ On first run, the dataset is downloaded from HuggingFace (~800MB) and cached loc
 
 | Commit | Notes | Test Acc (%) | Wall Time (s) |
 | --- | --- | --- | --- |
-| [`clane9/dc80870`](https://github.com/clane9/nsd-decoding/tree/dc80870) | Baseline MLP | 26.7 | 0.6 |
+| [`clane9/b919e73`](https://github.com/clane9/nsd-decoding/tree/b919e73) | Baseline MLP | 26.7 | 0.6 |
 
 ### subj01
 
 | Commit | Notes | Test Acc (%) | Wall Time (s) |
 | --- | --- | --- | --- |
-| [`clane9/dc80870`](https://github.com/clane9/nsd-decoding/tree/dc80870) | Baseline MLP | 62.3 | 2.6 |
+| [`clane9/b919e73`](https://github.com/clane9/nsd-decoding/tree/b919e73) | Baseline MLP | 62.3 | 2.6 |
