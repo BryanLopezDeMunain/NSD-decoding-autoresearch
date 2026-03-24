@@ -49,6 +49,14 @@ class ResidualMLP(nn.Module):
         return x
 
 
+def get_mask(ds):
+    # mask of non-background pixels for visual cortex flat map
+    activity = np.array(ds["activity"][:16])
+    mask = ~(activity == 127).all(axis=0)
+    assert mask.sum() == 18577
+    return mask
+
+
 def load_split_tensors(ds, mask):
     activity = np.array(ds["activity"])
     if activity.ndim == 4:
@@ -105,15 +113,15 @@ def main(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"device: {device}")
 
-    # Load mask
-    mask = ut.load_nsd_flat_mask()
-    num_voxels = int(mask.sum())
-    print(f"Mask: {num_voxels} voxels out of {mask.size}")
-
     # Load data
     print(f"Loading nsd-cococlip ({args.subset})...")
     dataset_dict = ut.load_nsd_cococlip(args.subset)
     print(dataset_dict)
+
+    # Load mask
+    mask = get_mask(dataset_dict["train"])
+    num_voxels = int(mask.sum())
+    print(f"Mask: {num_voxels} voxels out of {mask.size}")
 
     print("Loading tensors...")
     splits = {}

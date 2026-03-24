@@ -47,11 +47,6 @@ NSD_CATEGORIES = {
 TIME_BUDGET = 5 * 60
 
 
-def load_nsd_flat_mask() -> np.ndarray:
-    mask = np.load(ROOT / "nsd_flat_mask.npy")
-    return mask
-
-
 def load_nsd_cococlip(subset: Literal["ood", "subj01"] = "ood") -> dict[str, hfds.Dataset]:
     if subset == "ood":
         split_map = {"train": "train", "val": "validation", "test": "test"}
