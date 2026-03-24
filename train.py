@@ -1,21 +1,18 @@
-"""Baseline training script for NSD visual category decoding."""
+"""Training script for NSD visual category decoding."""
 
 import argparse
 import json
-import os
-import random
-import subprocess
 import time
 from pathlib import Path
 
-import datasets as hfds
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
+import utils as ut
+
 ROOT = Path(__file__).parent
-NUM_CLASSES = 24
 
 
 class ResidualBlock(nn.Module):
@@ -34,7 +31,7 @@ class ResidualBlock(nn.Module):
 
 
 class ResidualMLP(nn.Module):
-    def __init__(self, input_dim, latent_dim, depth, num_classes=NUM_CLASSES, dropout=0.0):
+    def __init__(self, input_dim, latent_dim, depth, num_classes=ut.NSD_NUM_CLASSES, dropout=0.0):
         super().__init__()
         self.proj = nn.Linear(input_dim, latent_dim)
         self.blocks = nn.Sequential(
@@ -52,13 +49,7 @@ class ResidualMLP(nn.Module):
         return x
 
 
-def load_split_tensors(ds, mask, subs=None):
-    """Load a HF dataset split, filter by subjects, apply mask, per-sample z-normalize."""
-    if subs is not None:
-        subject_ids = np.array(ds["subject_id"])
-        keep = np.isin(subject_ids, subs)
-        ds = ds.select(np.where(keep)[0])
-
+def load_split_tensors(ds, mask):
     activity = np.array(ds["activity"])
     if activity.ndim == 4:
         activity = activity[:, 0]
@@ -106,57 +97,30 @@ def evaluate(model, loader):
     return torch.cat(all_preds).cpu().numpy()
 
 
-def get_sha():
-    cwd = os.path.dirname(os.path.abspath(__file__))
-
-    def _run(command):
-        return subprocess.check_output(command, cwd=cwd).decode("ascii").strip()
-
-    sha = "N/A"
-    clean = True
-    try:
-        sha = _run(["git", "rev-parse", "HEAD"])
-        clean = not _run(["git", "diff-index", "HEAD"])
-    except Exception:
-        pass
-    return sha, clean
-
-
 def main(args):
-    seed = 42
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-
-    sha, is_clean = get_sha()
+    ut.random_seed()
+    sha, is_clean = ut.get_sha()
     print(f"sha: {sha}, clean: {is_clean}")
-
-    if args.subset == "ood":
-        print("Evaluating OOD (cross-subject) decoding")
-        split_map = {"train": "train", "val": "validation", "test": "test"}
-        subs = None
-    else:
-        print("Evaluating subj01 (within-subject) decoding")
-        split_map = {"train": "train", "val": "testid", "test": "shared1000"}
-        subs = [0]
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"device: {device}")
 
     # Load mask
-    mask = np.load(ROOT / "metadata/nsd_flat_mask.npy")
+    mask = ut.load_nsd_flat_mask()
     num_voxels = int(mask.sum())
     print(f"Mask: {num_voxels} voxels out of {mask.size}")
 
     # Load data
-    dataset_dict = hfds.load_dataset("clane9/nsd-flat-cococlip")
+    print(f"Loading nsd-cococlip ({args.subset})...")
+    dataset_dict = ut.load_nsd_cococlip(args.subset)
+    print(dataset_dict)
 
     print("Loading tensors...")
     splits = {}
-    for name, hf_split in split_map.items():
-        act, tgt = load_split_tensors(dataset_dict[hf_split], mask, subs)
+    for name, ds in dataset_dict.items():
+        act, tgt = load_split_tensors(ds, mask)
         splits[name] = (act.to(device), tgt.to(device))
-        print(f"  {name} ({hf_split}): {act.shape}, targets: {tgt.shape}")
+        print(f"  {name}: {act.shape}, targets: {tgt.shape}")
 
     train_loader = DataLoader(
         TensorDataset(*splits["train"]),
@@ -186,16 +150,16 @@ def main(args):
     best_val_acc = 0
     best_epoch = 0
     best_state = None
-    start_t = time.monotonic()
+    t0 = time.time()
     for epoch in range(args.epochs):
         loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion)
         scheduler.step()
 
         val_preds = evaluate(model, eval_loaders["val"])
         val_targets = splits["val"][1].cpu().numpy()
-        val_acc = 100 * (val_preds == val_targets).mean()
+        val_acc = ut.accuracy_score(val_targets, val_preds)
 
-        elapsed = time.monotonic() - start_t
+        elapsed = time.time() - t0
         print(
             f"Epoch {epoch + 1:3d}/{args.epochs} | loss={loss:.4f} "
             f"| train_acc={train_acc:.1f}% | val_acc={val_acc:.1f}% | {elapsed:.0f}s"
@@ -209,25 +173,33 @@ def main(args):
             print(f"Early stopping: val_acc {val_acc:.1f}% < 99% of best {best_val_acc:.1f}%")
             break
 
+        if elapsed > ut.TIME_BUDGET:
+            print(f"Gone over time budget: {elapsed:.0f}s > {ut.TIME_BUDGET}s")
+            break
+
+    wall_t = round(time.time() - t0, 1)
+
     # Load best model and evaluate all splits
-    model.load_state_dict(best_state)
+    if best_state is not None:
+        model.load_state_dict(best_state)
     model.to(device)
 
     scores = {}
     for split, (_, targets) in splits.items():
         preds = evaluate(model, eval_loaders[split])
-        acc = 100 * (preds == targets.cpu().numpy()).mean()
-        scores[f"acc_{split}"] = round(float(acc), 3)
+        acc = ut.accuracy_score(targets.cpu().numpy(), preds)
+        scores[f"acc_{split}"] = acc
 
     result = {
-        "subset": args.subset,
         "args": vars(args),
         "sha": sha,
         "clean": is_clean,
-        "wall_t": round(time.monotonic() - start_t, 3),
-        "best_epoch": best_epoch,
+        "wall_t": wall_t,
         **scores,
+        "best_epoch": best_epoch,
     }
+
+    print("\n---")
     print(json.dumps(result))
 
 

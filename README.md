@@ -51,26 +51,33 @@ uv sync
 
 ```bash
 # Cross-subject decoding (default)
-uv run python train_nsd_decoding.py
+uv run python train.py
 
 # Within-subject decoding
-uv run python train_nsd_decoding.py --subset subj01
+uv run python train.py --subset subj01
 
 # Custom hyperparameters
-uv run python train_nsd_decoding.py --latent_dim 512 --depth 4 --dropout 0.5 --lr 5e-4
+uv run python train.py --latent_dim 512 --depth 4 --dropout 0.5 --lr 5e-4
 ```
 
 On first run, the dataset is downloaded from HuggingFace (~800MB) and cached locally.
-
-## Baseline
-
-| Subset | Test Acc | Wall Time |
-|--------|----------|-----------|
-| ood | 26.7% | 1s |
-| subj01 | 62.3% | 4s |
 
 ## Constraints
 
 - Single GPU
 - Wall time at most 5 minutes per run
 - No additional data beyond the provided dataset
+
+## Results
+
+### OOD
+
+| Commit | Notes | Test Acc (%) | Wall Time (s) |
+| --- | --- | --- | --- |
+| [`clane9/dc80870`](https://github.com/clane9/nsd-decoding/tree/dc80870) | Baseline MLP | 26.7 | 0.6 |
+
+### subj01
+
+| Commit | Notes | Test Acc (%) | Wall Time (s) |
+| --- | --- | --- | --- |
+| [`clane9/dc80870`](https://github.com/clane9/nsd-decoding/tree/dc80870) | Baseline MLP | 62.3 | 2.6 |
