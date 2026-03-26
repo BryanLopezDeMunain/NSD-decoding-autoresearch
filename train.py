@@ -1,7 +1,6 @@
 """Training script for NSD visual category decoding."""
 
 import argparse
-import json
 import time
 from pathlib import Path
 
@@ -10,7 +9,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
-import utils as ut
+import prepare as ut
 
 ROOT = Path(__file__).parent
 
@@ -186,6 +185,7 @@ def main(args):
             break
 
     wall_t = round(time.time() - t0, 1)
+    peak_vram_mb = torch.cuda.max_memory_allocated(device) / 1024**2 if device.type == "cuda" else 0.0
 
     # Load best model and evaluate all splits
     if best_state is not None:
@@ -196,19 +196,14 @@ def main(args):
     for split, (_, targets) in splits.items():
         preds = evaluate(model, eval_loaders[split])
         acc = ut.accuracy_score(targets.cpu().numpy(), preds)
-        scores[f"acc_{split}"] = acc
-
-    result = {
-        "args": vars(args),
-        "sha": sha,
-        "clean": is_clean,
-        "wall_t": wall_t,
-        **scores,
-        "best_epoch": best_epoch,
-    }
+        scores[f"{split}_acc"] = acc
 
     print("\n---")
-    print(json.dumps(result))
+    print(f"val_acc:      {scores['val_acc']}")
+    print(f"test_acc:     {scores.get('test_acc', 'N/A')}")
+    print(f"train_acc:    {scores.get('train_acc', 'N/A')}")
+    print(f"peak_vram_mb: {peak_vram_mb:.1f}")
+    print(f"wall_t:       {wall_t}")
 
 
 if __name__ == "__main__":
