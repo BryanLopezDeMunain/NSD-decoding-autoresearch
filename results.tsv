@@ -1,0 +1,4 @@
+commit	val_acc	memory_gb	status	description
+c9807b6	24.900	3.2	keep	baseline ResidualMLP depth=3 latent=256
+47a1015	21.900	3.2	discard	full-epoch training (immediate overfit)
+9c4de2e	24.600	3.3	discard	latent=512 depth=6 (larger model, no gain)

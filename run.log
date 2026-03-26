@@ -1,7 +1,1 @@
-Traceback (most recent call last):
-  File "/home/bryanlopez/nsd-decoding-autoresearch/train.py", line 281, in <module>
-    mask = np.load(NSD_ROOT / "metadata/nsd_flat_mask.npy")
-  File "/home/bryanlopez/nsd-decoding-autoresearch/.venv/lib/python3.14/site-packages/numpy/lib/_npyio_impl.py", line 454, in load
-    fid = stack.enter_context(open(os.fspath(file), "rb"))
-                              ~~~~^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: '/home/bryanlopez/nsd-decoding/metadata/nsd_flat_mask.npy'
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
