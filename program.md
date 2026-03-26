@@ -12,7 +12,7 @@ To set up a new experiment, work with the user to:
    - `README.md` — repository context.
    - `prepare.py` — fixed constants, data loading helpers, evaluation utilities. Do not modify.
    - `train.py` — the file you modify. Model architecture, optimizer, training loop.
-4. **Verify data exists**: Check that `~/nsd-decoding/` contains the NSD mask (`metadata/nsd_flat_mask.npy`). If not, tell the human to set it up. The HuggingFace dataset (`clane9/nsd-flat-cococlip`) will be downloaded automatically on first run.
+4. **Verify data exists**: Check that `~/nsd-decoding-autoresearch/` contains the NSD mask (`metadata/nsd_flat_mask.npy`). If not, tell the human to set it up. The HuggingFace dataset (`clane9/nsd-flat-cococlip`) will be downloaded automatically on first run.
 5. **Initialize results.tsv**: Create `results.tsv` with just the header row. The baseline will be recorded after the first run.
 6. **Confirm and go**: Confirm setup looks good.
 

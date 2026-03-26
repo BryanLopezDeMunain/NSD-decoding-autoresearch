@@ -1,43 +1,83 @@
-# autoresearch — NSD Decoding
+# NSD Decoding
 
-An autonomous research agent for fMRI visual category decoding, forked from [karpathy/autoresearch](https://github.com/karpathy/autoresearch).
-
-The agent iterates on `train.py` overnight — modifying architecture and hyperparameters, training for 5 minutes, checking if validation loss improved, and keeping or discarding changes.
+Visual category decoding (24 classes) from fMRI data using the [Natural Scenes Dataset](https://naturalscenesdataset.org/).
 
 ## Task
 
-Decode visual categories from fMRI brain activity using the [NSD](https://huggingface.co/datasets/clane9/nsd-flat-cococlip) dataset. The model maps voxel activations to one of 24 COCO super-categories via a residual MLP.
+Given fMRI cortical flat map activity, predict which of 24 visual categories a subject is viewing.
 
-- **Input:** flattened fMRI voxels (masked to visual cortex), z-normalized per sample
-- **Model:** `ResidualMLP` — linear projection → residual blocks (LayerNorm + Linear + GELU) → classification head
-- **Metric:** `val_bpb` (cross-entropy / log 2) — lower is better
+**Dataset:** [`clane9/nsd-flat-cococlip`](https://huggingface.co/datasets/clane9/nsd-flat-cococlip)
 
-## Files
+Each sample contains:
+- `activity`: fMRI flat map (215 x 200, uint8)
+- `target`: category label (0-23)
+- `subject_id`, `trial_id`, `nsd_id`
 
-```
-prepare.py      — fixed constants, evaluation harness (do not modify)
-train.py        — model, optimizer, training loop (agent modifies this)
-program.md      — agent instructions
-pyproject.toml  — dependencies
-```
+## Subsets
 
-## Quick start
+### OOD (cross-subject, default)
 
-**Requirements:** Single NVIDIA GPU, Python 3.10+, [uv](https://docs.astral.sh/uv/), NSD data at `~/nsd-decoding/`.
+Train on 6 subjects, evaluate on 2 held-out subjects.
+
+| Split | Notes | Samples |
+|-------|----------|---------|
+| train | subj 1-3, 6-8 | 32,539 |
+| val | subj 4 | 5,418 |
+| test | subj 5 | 5,390 |
+
+### subj01 (within-subject)
+
+Train and evaluate on subj01 only.
+
+| Split | Notes | Samples |
+|-------|--------|---------|
+| train | ses 1-35 | 6,190 |
+| val | ses 36-40 | 864 |
+| test | shared1000 | 559 |
+
+## Categories
+
+motorcycle, airplane, bus, train, fire hydrant, stop sign, horse, sheep,
+cow, elephant, zebra, giraffe, umbrella, skis, snowboard, kite,
+skateboard, surfboard, tennis racket, pizza, cake, bed, toilet, clock
+
+## Setup
 
 ```bash
 uv sync
-uv run train.py
 ```
 
-## Running the agent
+## Run
 
-Open Claude Code in this repo, then:
+```bash
+# Cross-subject decoding (default)
+uv run python train.py
 
+# Within-subject decoding
+uv run python train.py --subset subj01
+
+# Custom hyperparameters
+uv run python train.py --latent_dim 512 --depth 4 --dropout 0.5 --lr 5e-4
 ```
-Have a look at program.md and let's kick off a new experiment.
-```
 
-## License
+On first run, the dataset is downloaded from HuggingFace (~800MB) and cached locally.
 
-MIT
+## Constraints
+
+- Single GPU
+- Wall time at most 5 minutes per run
+- No additional data beyond the provided dataset
+
+## Results
+
+### OOD
+
+| Commit | Notes | Test Acc (%) | Wall Time (s) |
+| --- | --- | --- | --- |
+| [`clane9/b919e73`](https://github.com/clane9/nsd-decoding/tree/b919e73) | Baseline MLP | 26.7 | 0.6 |
+
+### subj01
+
+| Commit | Notes | Test Acc (%) | Wall Time (s) |
+| --- | --- | --- | --- |
+| [`clane9/b919e73`](https://github.com/clane9/nsd-decoding/tree/b919e73) | Baseline MLP | 62.3 | 2.6 |
